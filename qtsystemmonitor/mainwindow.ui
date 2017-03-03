@@ -34,6 +34,11 @@
        <attribute name="title">
         <string>Procesos</string>
        </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QTableWidget" name="tableWidget_2"/>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>
