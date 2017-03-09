@@ -14,10 +14,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    mihilo.cpp
+    mihilo.cpp \
+    hardwareh.cpp
 
 HEADERS  += mainwindow.h \
-    mihilo.h
+    mihilo.h \
+    hardwareh.h
 
 FORMS    += mainwindow.ui
 

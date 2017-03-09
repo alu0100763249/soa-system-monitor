@@ -7,6 +7,12 @@
 #include <QDir>
 #include <sys/types.h>
 #include <pwd.h>
+#include <QThread>
+#include "hardwareh.h"
+#include<QTreeWidget>
+#include<QJsonDocument>
+#include<QJsonObject>
+#include<QJsonValue>
 
 struct Qproceso{
     QString pid;
@@ -22,6 +28,7 @@ class MainWindow;
 
 class QTimer;
 class Mihilo;
+class Hardwareh;
 
 class MainWindow : public QMainWindow
 {
@@ -35,6 +42,7 @@ public:
  private slots:
     void recibedatos();
     void onTimeout();
+    void hardwareprocces();
 
 private:
     Ui::MainWindow *ui;
@@ -46,8 +54,14 @@ private:
     QString entrada0text;
     QString entrada1text;
     QTimer *mTimer;
+    QTimer *mTimer2;
     QVector <Qproceso> procesos;
     passwd *psswd;
+    QThread hardware;
+    Hardwareh ph;
+    QJsonDocument jd;
+    void addTreeRoot(QString name, QJsonDocument json);
+    void addTreeChild(QTreeWidgetItem *parent, QString name, QJsonObject obj);
 };
 
 #endif // MAINWINDOW_H

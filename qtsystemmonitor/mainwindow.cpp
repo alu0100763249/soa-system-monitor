@@ -4,6 +4,11 @@
 #include <QTimer>
 #include <QFuture>
 #include <QtConcurrent/QtConcurrent>
+#include "hardwareh.h"
+#include <QVector>
+
+
+
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -27,14 +32,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tableWidget_2->setColumnWidth(0,200);
     ui->tableWidget_2->setColumnWidth(2,300);
 
-    ui->tabWidget->setTabOrder(ui->tableWidget, ui->tableWidget_2);
-
-
     mTimer = new QTimer(this);
     connect(mTimer,SIGNAL(timeout()), this, SLOT(onTimeout()));
     mTimer->start(5000);
 
-
+    ph.moveToThread(&hardware);
+    connect(&ph, SIGNAL(envsignal()),this,SLOT(hardwareprocces()));
+    ph.procesohard();
 
 }
 
@@ -287,6 +291,60 @@ void MainWindow::onTimeout()
    }
    //RecogeProceso("/proc");
 }
+
+void MainWindow::hardwareprocces()
+{
+
+    jd=QJsonDocument::fromJson(ph.recibirhard());
+
+
+    // Set the number of columns in the tree
+        ui->treeWidget->setColumnCount(1);
+
+        // Set the headers
+        ui->treeWidget->setHeaderLabels(QStringList() << "Nombre");
+
+        // Add root node
+        addTreeRoot(jd.object().value("id").toString(),jd);
+
+}
+
+void MainWindow::addTreeRoot(QString name, QJsonDocument json)
+{
+    // QTreeWidgetItem(QTreeWidget * parent, int type = Type)
+        QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui->treeWidget);
+
+        // QTreeWidgetItem::setText(int column, const QString & text)
+        treeItem->setText(0, name);
+        QJsonArray v= json.object().value("children").toArray();
+        for (int i=0; i<=v.size();i++){
+         addTreeChild(treeItem, v[i].toObject().value("id").toString(),v[i].toObject());
+         //addTreeChild(treeItem, v[i].toObject().value("id").toString());
+        }
+
+}
+
+void MainWindow::addTreeChild(QTreeWidgetItem *parent, QString name, QJsonObject obj)
+{
+    // QTreeWidgetItem(QTreeWidget * parent, int type = Type)
+        QTreeWidgetItem *treeItem = new QTreeWidgetItem();
+
+        // QTreeWidgetItem::setText(int column, const QString & text)
+        treeItem->setText(0, name);
+        QJsonArray v= obj.value("children").toArray();
+        if(!v.isEmpty())
+            for (int i=0; i<=v.size();i++){
+
+             addTreeChild(treeItem, v[i].toObject().value("id").toString(),v[i].toObject());
+             //addTreeChild(treeItem, v[i].toObject().value("id").toString());
+            }
+
+        // QTreeWidgetItem::addChild(QTreeWidgetItem * child)
+        parent->addChild(treeItem);
+
+}
+
+
 
 
 
